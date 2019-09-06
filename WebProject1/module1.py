@@ -5,13 +5,13 @@
 import csv
 
 
-csv_file = open("arduino_bom.csv", "r")
-csv_reader = csv.DictReader(csv_file)
+csv_file = open("bom.csv", "r")
+csv_reader = csv.DictReader(csv_file,fieldnames=['Manufacturer', 'Part Number'])
 line_items = []
 queries = []
 for line_item in csv_reader:
     # Skip line items without part numbers and manufacturers
-    if not line_item['Part Number'] or not line_item['Manufacturer']:
+    if not line_item['Part Number'] or not line_item["Manufacturer"]:
         continue
     line_items.append(line_item)
     queries.append({'mpn': line_item['Part Number'],
@@ -23,7 +23,7 @@ for line_item in csv_reader:
 # Send queries to REST API for part matching.
 import json
 import urllib
-
+import urllib.parse
 
 results = []
 for i in range(0, len(queries), 20):
@@ -32,8 +32,8 @@ for i in range(0, len(queries), 20):
     batched_queries = queries[i: i + 20]
 
     url = 'http://octopart.com/api/v3/parts/match?queries=%s' \
-        % urllib.quote(json.dumps(batched_queries))
-    url += '?apikey=89feafc76ce94183e1f0'
+        % urllib.parse.quote(json.dumps(batched_queries))
+    url += "?apikey=" + config.api_key
     data = urllib.urlopen(url).read()
     response = json.loads(data)
 
