@@ -3,7 +3,7 @@
 # This code assumes a file format similar to the one on the
 # Arduino BOM
 import csv
-
+import config
 
 csv_file = open("bom.csv", "r")
 csv_reader = csv.DictReader(csv_file,fieldnames=['Manufacturer', 'Part Number'])
@@ -24,6 +24,7 @@ for line_item in csv_reader:
 import json
 import urllib
 import urllib.parse
+import urllib.request
 
 results = []
 for i in range(0, len(queries), 20):
@@ -34,7 +35,8 @@ for i in range(0, len(queries), 20):
     url = 'http://octopart.com/api/v3/parts/match?queries=%s' \
         % urllib.parse.quote(json.dumps(batched_queries))
     url += "?apikey=" + config.api_key
-    data = urllib.urlopen(url).read()
+    #data = urllib.urlopen(url).read()
+    data = urllib.request.urlopen(url).read()
     response = json.loads(data)
 
     # Record results for analysis
